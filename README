@@ -1,0 +1,98 @@
+LoL Rotation (c) Jakub 'Eremiell' Marek, 2013
+
+This program generates optimal free character rotations for League of Legends using various guidelines.
+
+This program happened as a reaction to S3W32 rotation and massive discussion about it. [NA](http://beta.na.leagueoflegends.com/en/news/champions-skins/free-rotation/new-free-champion-rotation-season-three-week-32) [EUW](http://beta.euw.leagueoflegends.com/en/news/champions-skins/free-rotation/new-free-champion-rotation-season-three-week-32) [EUNE](http://beta.eune.leagueoflegends.com/en/news/champions-skins/free-rotation/new-free-champion-rotation-season-three-week-32)
+
+"Janna & Riven was free approx 2-3 weeks ago. Rengar again? Champs are good, but c'mon.. Put less popular champs in the rotation more often."
+"Seriously RIOT Rengar for a second week in a row you must be kidding there are so many other champs ...."
+"you are right but it is weird that there are a few champs that are free to play every few weeks."
+"It means they're running out of champs to rotate and they should make more faster."
+etc...
+	--random discussion quotes
+
+A lot of people happened to dislike the rotation and a plain sight could tell, it's nowhere near the declared guidelines. These were found linked on NA server. [Guidelines](http://forums.na.leagueoflegends.com/board/showthread.php?t=46045)
+
+"Champion Rotation Goals
+1) Give new players some simple Champions to play
+2) Provide a balance of types of Champions for new players
+-- This allows new players to make balanced teams
+3) Allow players to preview all Champions eventually"
+	--rotation guidelines by RiotChris
+
+There were also hints, this problem is up to be solved.
+
+"Given these goals we look at player feedback, and decide which Champions should be free next week that allow us to meet these goals."
+"What pattern would you like to see? We're always open to constructive feedback."
+	--RiotChris
+
+I don't know, how to you, but to me it looks like a dare. A kind of dare I like. So, challenge accepted.
+
+So I delved deep into data sources, calculations ran through my head.
+
+I initially projected two different systems and I saw a pro and a con on each. After doing further research and statistics, the "static" method won above the "dynamic" one, when it's con was disproved, so that is, what I prefer, but both are implemented.
+
+Static algorithm is deterministic, so you can project any far into future and see the rotation (well, unless someone puts something in between, like a thematic rotation or whatever). Due to varying numbers of champions in the pools, the possible con (very similar rotations in cycles) should not happen.
+
+The dynamic solution has quite some bit of random in it, making it non-deterministic and well, more random, which is what I consider con of this method, yet it can be seen as a pro.
+
+Besides the already mentioned guidelines, other rules are used to determine an optimal rotation. [Wikia1](http://leagueoflegends.wikia.com/wiki/Free_champion_rotation) [Wikia2](http://leagueoflegends.wikia.com/wiki/Champion_Rotation_Schedule_%28Season_Two%29)
+
+"Since the release of Fiora, however, new champions have been free to play on the third week following their release."
+"Every champion is in one of these champion type "pools". There are 6 champion type pools:
+
+    Assassin: 14
+    Fighter: 33
+    Mage: 27
+    Marksman: 17
+    Support: 9
+    Tank: 15"
+"The CRS now selects a roster of champions in the following format:
+
+    1 or 2 Fighters
+    1 or 2 Assassins
+    2 Mages
+    2 Carries
+    1 Support
+    2 Tanks"
+	--LoL wikia pages
+
+So this is how it works:
+
+It splits each pool into "easy" and "hard" subpools using arithmetic mean of difficulties of all characters in given pool.
+
+For mages, carries and tanks, it always picks one from easy and one from hard pool. Support is chosen from the opposite pool than last week.
+
+For fighters and assassins, it checks, which had majority last week and gives it to the second one. The major one gets one easy and one hard. The minor one gets reverse of what it got two weeks ago.
+
+Exact character choice in any given pool is determined mainly on how long it wasn't around.
+
+New champions are rotated in 3 weeks after release regardless of which day it turned in, so it doesn't matter, if it rolled on the same day as rotation or on last day before a new one. It gets that week and another two and then it rotates in (unless you're on dynamic, where it has some chance to not roll in on first available week).
+
+Even new champions occupy their respective slots. In fact, they don't have to rotate in even on static, if they're fighters, assassins or supports and given difficulty subpool is not used that week.
+
+Whenever possible, easy pools get slight advantage over hard pools. Whenever possibly, fighters get precedence before assassins, as there's much more of them and it takes ages for them to rotate all around.
+
+Statistically, each rotation should 4-6 champions be among easiest in their respective pool. Which can be still quite high (check assassins' ratings...)'. Other slots rotate the "hard" champions. This should fulfill both goals: to have easy champions on rotation and to eventually rotate all of them.
+
+Data for this program are generated by [LoL Data Create](https://github.com/Eremiell/LoLDataCreate). (Copy the db.csv Data Create pulls to wherever you have Rotation and run.)
+
+Usage:
+
+To invoke this usage guide, simply run the program with any of --help, -h, --usage, -u, -?, /? or \?.
+
+First put the db.csv in the same folder (or run Rotation from where that file is).
+
+LoL Rotation can be run as is or with "--dynamic" argument. It normally runs static algorithm, the argument flips it to dynamic, which fallbacks to static anyway for certain cases (no champions with positive last rotations, try W0).
+
+Whenever it runs, it writes the new state into dbnew.csv. It will first try to load dbnew.csv, if it's present, continuing where it stopped. If not found, it will use db.csv.
+
+So if you wanna play around, you can generate as many weeks as you want. You can experiment with switching methods, or you can even generate "older" db.csv and observe alternative history. (See [LoL Data Create's README](https://github.com/Eremiell/LoLDataCreate/blob/master/README) for How-To.)
+
+If you ever get bored of what you got, just delete dbnew.csv and it will start anew from db.csv. You can anytime generate new db.csv by [LoL Data Create](https://github.com/Eremiell/LoLDataCreate).
+
+Most of the data was harvested from [Wikia](http://leagueoflegends.wikia.com/wiki/League_of_Legends_Wiki), more on the topic in [LoL Data Create's README](https://github.com/Eremiell/LoLDataCreate/blob/master/README).
+
+This software has currently no license. It's been uploaded as a solution proposal, inspiration for dialogue possibly leading to even better solutions, work in progress and partly as showcase. Feel free to contact me about anything concerning it or, well, generally anything.
+
+Was tested with G++ and VSE2012 and should compile fine.
